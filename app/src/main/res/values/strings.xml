@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">DriftBoard</string>
+    <string name="tagline">Write now. Post whenever signal returns</string>
+    <string name="offline_mode">• OFFLINE MODE</string>
+    
+    <string name="greeting">Good morning</string>
+    <string name="user_name">Dinelka</string>
+    
+    <string name="total_posts">Total posts</string>
+    <string name="pending_upload">Pending upload</string>
+    <string name="quick_actions">QUICK ACTIONS</string>
+    
+    <string name="action_new_post">New post</string>
+    <string name="action_search">Search</string>
+    <string name="action_view_posts">View Posts</string>
+    <string name="action_delete_posts">Delete Posts</string>
+    
+    <string name="recent_posts">RECENT POSTS</string>
+    <string name="my_posts">My Posts</string>
+    
+    <string name="create_new_post">New Post</string>
+    <string name="edit_post">Edit Post</string>
+    <string name="save_post">Save Post</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="discard">Discard</string>
+    
+    <string name="message_header">MESSAGE</string>
+    <string name="message_placeholder">"What's on your mind? You can write freely — this saves locally as you go."</string>
+    <string name="attach_image">ATTACH IMAGE</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    
+    <string name="share">Share</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+</resources>

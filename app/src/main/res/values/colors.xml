@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_dark">#1E1738</color>
+    <color name="primary_accent">#37295F</color>
+    <color name="splash_bg_top">#18112C</color>
+    <color name="splash_bg_bottom">#35255E</color>
+    
+    <color name="background_light">#F6F6F9</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="surface_item">#EDECEF</color>
+    
+    <color name="text_primary">#1C1B20</color>
+    <color name="text_secondary">#706E7B</color>
+    <color name="text_hint">#9C9AA5</color>
+    <color name="border_light">#E3E2E8</color>
+    
+    <!-- Stat card accents -->
+    <color name="stat_card_blue">#E8ECFB</color>
+    <color name="stat_card_blue_num">#263B80</color>
+    <color name="stat_card_peach">#FBF1D8</color>
+    <color name="stat_card_peach_num">#8A6014</color>
+    
+    <!-- Badges -->
+    <color name="badge_draft_bg">#FDF3DD</color>
+    <color name="badge_draft_text">#875F11</color>
+    <color name="badge_synced_bg">#E0F5EE</color>
+    <color name="badge_synced_text">#19664B</color>
+    
+    <!-- Action buttons -->
+    <color name="btn_dark">#1D1836</color>
+    <color name="btn_delete">#A54949</color>
+    <color name="btn_delete_light">#FBEAEB</color>
+    
+    <!-- Platform brands -->
+    <color name="brand_blogger">#F57C00</color>
+    <color name="brand_wordpress">#21759B</color>
+    <color name="brand_reddit">#FF4500</color>
+</resources>
