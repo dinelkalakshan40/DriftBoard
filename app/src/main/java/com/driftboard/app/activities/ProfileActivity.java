@@ -26,9 +26,38 @@ public class ProfileActivity extends AppCompatActivity {
         menuStorage.setText("💾  Local storage — " + count + " posts");
 
         findViewById(R.id.menuPosts).setOnClickListener(v -> finish());
-        findViewById(R.id.menuSettings).setOnClickListener(v -> Toast.makeText(this, "Settings & API configurations", Toast.LENGTH_SHORT).show());
+        findViewById(R.id.menuSettings).setOnClickListener(v -> showBloggerSettingsDialog());
 
         findViewById(R.id.btnLogout).setOnClickListener(v -> showLogoutDialog());
+    }
+
+    private void showBloggerSettingsDialog() {
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_blogger_settings, null);
+
+        android.widget.EditText etBlogId = view.findViewById(R.id.etBloggerBlogId);
+        android.widget.EditText etToken = view.findViewById(R.id.etBloggerToken);
+
+        android.content.SharedPreferences prefs = getSharedPreferences("driftboard_prefs", MODE_PRIVATE);
+        etBlogId.setText(prefs.getString("blogger_blog_id", ""));
+        etToken.setText(prefs.getString("blogger_oauth_token", ""));
+
+        view.findViewById(R.id.btnCancelBloggerSettings).setOnClickListener(v -> dialog.dismiss());
+        view.findViewById(R.id.btnSaveBloggerSettings).setOnClickListener(v -> {
+            String blogId = etBlogId.getText().toString().trim();
+            String token = etToken.getText().toString().trim();
+
+            prefs.edit()
+                    .putString("blogger_blog_id", blogId)
+                    .putString("blogger_oauth_token", token)
+                    .apply();
+
+            dialog.dismiss();
+            Toast.makeText(this, "Blogger API settings saved successfully", Toast.LENGTH_SHORT).show();
+        });
+
+        dialog.setContentView(view);
+        dialog.show();
     }
 
     private void showLogoutDialog() {

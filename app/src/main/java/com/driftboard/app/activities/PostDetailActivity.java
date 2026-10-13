@@ -98,9 +98,18 @@ public class PostDetailActivity extends AppCompatActivity {
 
     private void uploadSinglePostToBlogger() {
         if (post == null) return;
+        android.content.SharedPreferences prefs = getSharedPreferences("driftboard_prefs", MODE_PRIVATE);
+        String blogId = prefs.getString("blogger_blog_id", "");
+        String token = prefs.getString("blogger_oauth_token", "");
+
+        if (blogId.isEmpty() || token.isEmpty()) {
+            Toast.makeText(this, "Please configure your Blogger Blog ID and OAuth Token in Profile -> Settings first.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Toast.makeText(this, "Uploading message to Blogger...", Toast.LENGTH_SHORT).show();
         BloggerPublisher bloggerPublisher = new BloggerPublisher();
-        bloggerPublisher.publishPost(post, null, null, new BloggerPublisher.PublishCallback() {
+        bloggerPublisher.publishPost(post, blogId, token, new BloggerPublisher.PublishCallback() {
             @Override
             public void onSuccess(String remotePostId, String postUrl) {
                 post.setStatus("synced");
@@ -123,7 +132,7 @@ public class PostDetailActivity extends AppCompatActivity {
 
             @Override
             public void onError(String errorMessage) {
-                Toast.makeText(PostDetailActivity.this, "Failed to upload to Blogger: " + errorMessage, Toast.LENGTH_SHORT).show();
+                Toast.makeText(PostDetailActivity.this, "Blogger Upload Failed: " + errorMessage, Toast.LENGTH_LONG).show();
             }
         });
     }

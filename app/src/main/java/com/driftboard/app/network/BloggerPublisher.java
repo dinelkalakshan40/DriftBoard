@@ -38,7 +38,16 @@ public class BloggerPublisher {
     public void publishPost(Post post, String blogId, String oauthToken, PublishCallback callback) {
         executor.execute(() -> {
             try {
-                String targetUrl = "https://www.googleapis.com/blogger/v3/blogs/" + (blogId != null && !blogId.isEmpty() ? blogId : "demo") + "/posts/";
+                if (blogId == null || blogId.isEmpty()) {
+                    mainHandler.post(() -> callback.onError("Blogger Blog ID is missing. Configure it in Profile -> Settings."));
+                    return;
+                }
+                if (oauthToken == null || oauthToken.isEmpty()) {
+                    mainHandler.post(() -> callback.onError("Blogger OAuth Token is missing. Configure it in Profile -> Settings."));
+                    return;
+                }
+
+                String targetUrl = "https://www.googleapis.com/blogger/v3/blogs/" + blogId + "/posts/";
 
                 JSONObject json = new JSONObject();
                 json.put("kind", "blogger#post");
@@ -52,11 +61,8 @@ public class BloggerPublisher {
 
                 Request.Builder builder = new Request.Builder()
                         .url(targetUrl)
-                        .post(body);
-
-                if (oauthToken != null && !oauthToken.isEmpty()) {
-                    builder.addHeader("Authorization", "Bearer " + oauthToken);
-                }
+                        .post(body)
+                        .addHeader("Authorization", "Bearer " + oauthToken);
 
                 Request request = builder.build();
 
@@ -68,17 +74,14 @@ public class BloggerPublisher {
                         String postUrl = respJson.optString("url", "https://www.blogger.com");
                         mainHandler.post(() -> callback.onSuccess(remoteId, postUrl));
                     } else {
-                        Log.w(TAG, "Blogger status code: " + response.code());
-                        String fallbackId = "blogger_" + System.currentTimeMillis();
-                        String fallbackUrl = "https://www.blogger.com";
-                        mainHandler.post(() -> callback.onSuccess(fallbackId, fallbackUrl));
+                        String errorMsg = "HTTP " + response.code() + " - Invalid Blog ID or Access Token.";
+                        Log.w(TAG, errorMsg);
+                        mainHandler.post(() -> callback.onError(errorMsg));
                     }
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error connecting to Blogger API", e);
-                String fallbackId = "blogger_mock_" + System.currentTimeMillis();
-                String fallbackUrl = "https://www.blogger.com";
-                mainHandler.post(() -> callback.onSuccess(fallbackId, fallbackUrl));
+                mainHandler.post(() -> callback.onError(e.getMessage() != null ? e.getMessage() : "Network error connecting to Blogger"));
             }
         });
     }

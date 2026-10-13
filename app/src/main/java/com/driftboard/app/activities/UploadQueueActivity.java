@@ -104,36 +104,92 @@ public class UploadQueueActivity extends AppCompatActivity {
         btnUploadPosts.setEnabled(false);
 
         boolean isWordPress = rbWordPress.isChecked();
-        String platform = isWordPress ? "wordpress" : "blogger";
 
-        // Upload sequentially and update database records
-        new Thread(() -> {
-            for (Long id : selectedIds) {
-                Post post = dbHelper.getPostById(id);
-                if (post != null) {
-                    post.setStatus("synced");
-                    post.setPlatform(platform);
-                    post.setRemotePostId(platform + "_" + System.currentTimeMillis());
-                    dbHelper.updatePost(post);
+        android.content.SharedPreferences prefs = getSharedPreferences("driftboard_prefs", MODE_PRIVATE);
+        String blogId = prefs.getString("blogger_blog_id", "");
+        String token = prefs.getString("blogger_oauth_token", "");
+
+        if (!isWordPress && (blogId.isEmpty() || token.isEmpty())) {
+            pbUpload.setVisibility(View.GONE);
+            btnUploadPosts.setEnabled(true);
+            Toast.makeText(this, "Please configure your Blogger Blog ID and OAuth Token in Profile -> Settings first.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (isWordPress) {
+            new Thread(() -> {
+                for (Long id : selectedIds) {
+                    Post post = dbHelper.getPostById(id);
+                    if (post != null) {
+                        post.setStatus("synced");
+                        post.setPlatform("wordpress");
+                        post.setRemotePostId("wp_" + System.currentTimeMillis());
+                        dbHelper.updatePost(post);
+                    }
                 }
-            }
+                runOnUiThread(() -> {
+                    pbUpload.setVisibility(View.GONE);
+                    btnUploadPosts.setEnabled(true);
+                    Toast.makeText(UploadQueueActivity.this, "Successfully uploaded " + selectedIds.size() + " posts to WordPress", Toast.LENGTH_LONG).show();
+                    finish();
+                });
+            }).start();
+        } else {
+            // Upload sequentially to Blogger API
+            new Thread(() -> {
+                final String[] lastUrl = {"https://www.blogger.com"};
+                final boolean[] hasError = {false};
+                final String[] errorMsg = {""};
 
-            final String targetOpenUrl = !isWordPress ? "https://www.blogger.com" : null;
-            runOnUiThread(() -> {
-                pbUpload.setVisibility(View.GONE);
-                btnUploadPosts.setEnabled(true);
-                Toast.makeText(UploadQueueActivity.this,
-                        "Successfully uploaded " + selectedIds.size() + " posts to " + (isWordPress ? "WordPress" : "Blogger"),
-                        Toast.LENGTH_LONG).show();
+                for (Long id : selectedIds) {
+                    Post post = dbHelper.getPostById(id);
+                    if (post != null) {
+                        java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+                        bloggerPublisher.publishPost(post, blogId, token, new BloggerPublisher.PublishCallback() {
+                            @Override
+                            public void onSuccess(String remotePostId, String postUrl) {
+                                post.setStatus("synced");
+                                post.setPlatform("blogger");
+                                post.setRemotePostId(remotePostId);
+                                dbHelper.updatePost(post);
+                                if (postUrl != null && !postUrl.isEmpty()) {
+                                    lastUrl[0] = postUrl;
+                                }
+                                latch.countDown();
+                            }
 
-                if (targetOpenUrl != null) {
-                    try {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(targetOpenUrl));
-                        startActivity(browserIntent);
-                    } catch (Exception ignored) {}
+                            @Override
+                            public void onError(String errorMessage) {
+                                hasError[0] = true;
+                                errorMsg[0] = errorMessage;
+                                latch.countDown();
+                            }
+                        });
+                        try {
+                            latch.await();
+                        } catch (InterruptedException ignored) {}
+
+                        if (hasError[0]) {
+                            break;
+                        }
+                    }
                 }
-                finish();
-            });
-        }).start();
+
+                runOnUiThread(() -> {
+                    pbUpload.setVisibility(View.GONE);
+                    btnUploadPosts.setEnabled(true);
+                    if (hasError[0]) {
+                        Toast.makeText(UploadQueueActivity.this, "Blogger Batch Upload Error: " + errorMsg[0], Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(UploadQueueActivity.this, "Successfully uploaded " + selectedIds.size() + " posts to Blogger", Toast.LENGTH_LONG).show();
+                        try {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(lastUrl[0]));
+                            startActivity(browserIntent);
+                        } catch (Exception ignored) {}
+                        finish();
+                    }
+                });
+            }).start();
+        }
     }
 }
