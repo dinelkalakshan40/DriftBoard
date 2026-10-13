@@ -22,7 +22,7 @@ import okhttp3.Response;
 public class WordPressPublisher {
 
     private static final String TAG = "WordPressPublisher";
-    // Default demo site endpoint (can be configured in Settings)
+    // Default demo site endpoint
     private static final String DEFAULT_WP_URL = "https://demo.wp-api.org/wp-json/wp/v2/posts";
 
     private final OkHttpClient client;
@@ -59,7 +59,7 @@ public class WordPressPublisher {
                         .url(targetUrl)
                         .post(body);
 
-                // Attach HTTP Basic Auth if credentials are provided
+                // Attach HTTP Basic Auth credentials are provided
                 if (username != null && appPassword != null && !username.isEmpty()) {
                     String auth = username + ":" + appPassword;
                     String encodedAuth = Base64.encodeToString(auth.getBytes(), Base64.NO_WRAP);

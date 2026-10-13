@@ -8,7 +8,7 @@ public class Post implements Serializable {
     private String content;
     private String imageUri;
     private String status; // "draft" or "synced"
-    private String platform; // "wordpress", "blogger", etc.
+    private String platform; // "wordpress" and "blogger".
     private String remotePostId;
     private long createdAt;
     private long updatedAt;
