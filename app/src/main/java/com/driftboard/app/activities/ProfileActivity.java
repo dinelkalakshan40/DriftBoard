@@ -12,6 +12,7 @@ import com.driftboard.app.R;
 import com.driftboard.app.database.PostDatabaseHelper;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
+//activity profile information, local storage details, and Blogger settings
 public class ProfileActivity extends AppCompatActivity {
 
     @Override
@@ -31,6 +32,7 @@ public class ProfileActivity extends AppCompatActivity {
         findViewById(R.id.btnLogout).setOnClickListener(v -> showLogoutDialog());
     }
 
+    // Opens bottom sheet where the user can update Blogger API settings
     private void showBloggerSettingsDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_blogger_settings, null);
@@ -60,6 +62,7 @@ public class ProfileActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    //confirmation msg before logging out app
     private void showLogoutDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_delete, null);

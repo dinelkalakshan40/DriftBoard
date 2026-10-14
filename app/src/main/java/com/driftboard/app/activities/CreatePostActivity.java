@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+// This activity allows users to create a post and attach an image
 public class CreatePostActivity extends AppCompatActivity {
 
     private EditText etTitle, etContent;
@@ -34,6 +35,7 @@ public class CreatePostActivity extends AppCompatActivity {
     private String currentPhotoPath;
     private Uri selectedImageUri;
 
+    // This launcher opens the camera and returns the result. it displays the image preview.
     private final ActivityResultLauncher<Uri> takePictureLauncher =
             registerForActivityResult(new ActivityResultContracts.TakePicture(), success -> {
                 if (success && currentPhotoPath != null) {
@@ -42,8 +44,10 @@ public class CreatePostActivity extends AppCompatActivity {
                 }
             });
 
+    // This launcher opens the gallery so the user can select an image.
     private final ActivityResultLauncher<String> selectPictureLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                // Check the user selected an image
                 if (uri != null) {
                     selectedImageUri = uri;
                     try {
@@ -53,6 +57,7 @@ public class CreatePostActivity extends AppCompatActivity {
                 }
             });
 
+    // create post screen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,11 +81,13 @@ public class CreatePostActivity extends AppCompatActivity {
         });
     }
 
+    //display the selecte or capture image to screen
     private void showImagePreview(Uri uri) {
         layoutImagePreview.setVisibility(View.VISIBLE);
         ivPreview.setImageURI(uri);
     }
 
+   //creates a file and opens the camera to capture a photo
     private void dispatchTakePictureIntent() {
         try {
             File photoFile = createImageFile();
@@ -95,6 +102,7 @@ public class CreatePostActivity extends AppCompatActivity {
         }
     }
 
+    //create unique image file in the app pictures folder
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
@@ -104,6 +112,7 @@ public class CreatePostActivity extends AppCompatActivity {
         return image;
     }
 
+    // checks the entered content and saves the post as a local draft
     private void savePost() {
         String title = etTitle.getText().toString().trim();
         String content = etContent.getText().toString().trim();
@@ -117,6 +126,7 @@ public class CreatePostActivity extends AppCompatActivity {
             return;
         }
 
+        // Create Post object
         Post post = new Post();
         post.setTitle(title);
         post.setContent(content);
@@ -125,6 +135,7 @@ public class CreatePostActivity extends AppCompatActivity {
 
         PostDatabaseHelper.getInstance(this).insertPost(post);
         Toast.makeText(this, "Post saved locally", Toast.LENGTH_SHORT).show();
+        // Close the create-post screen after saving
         finish();
     }
 }

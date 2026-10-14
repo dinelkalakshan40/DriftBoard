@@ -12,6 +12,7 @@ import com.driftboard.app.models.Post;
 import java.util.ArrayList;
 import java.util.List;
 
+// SQLite Database Helper for local device storage for posts and drafts
 public class PostDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "PostDatabaseHelper";
@@ -31,6 +32,7 @@ public class PostDatabaseHelper extends SQLiteOpenHelper {
 
     private static PostDatabaseHelper instance;
 
+    // Singleton instance getter to prevent multi-instance database access conflicts
     public static synchronized PostDatabaseHelper getInstance(Context context) {
         if (instance == null) {
             instance = new PostDatabaseHelper(context.getApplicationContext());
@@ -42,6 +44,7 @@ public class PostDatabaseHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    // Creates the SQLite table and populates with mock data
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTableQuery = "CREATE TABLE " + TABLE_POSTS + " ("
@@ -56,7 +59,6 @@ public class PostDatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_UPDATED_AT + " INTEGER NOT NULL);";
         db.execSQL(createTableQuery);
 
-        // Insert mock data matching Figma screenshots if empty
         insertMockData(db);
     }
 
@@ -66,6 +68,7 @@ public class PostDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    // Seeds sample mock posts
     private void insertMockData(SQLiteDatabase db) {
         long now = System.currentTimeMillis();
         String[][] mocks = {
@@ -89,6 +92,7 @@ public class PostDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    // Insert new post record into SQLite database
     public long insertPost(Post post) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -107,6 +111,7 @@ public class PostDatabaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
+    // Retrieves all stored posts ordered by creation date
     public List<Post> getAllPosts() {
         List<Post> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -121,6 +126,7 @@ public class PostDatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    // Retrieves a single post unique SQLite row ID
     public Post getPostById(long id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_POSTS, null, COLUMN_ID + " = ?",
@@ -134,6 +140,7 @@ public class PostDatabaseHelper extends SQLiteOpenHelper {
         return post;
     }
 
+    // Updates an existing post record in SQLite database
     public int updatePost(Post post) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -148,11 +155,13 @@ public class PostDatabaseHelper extends SQLiteOpenHelper {
         return db.update(TABLE_POSTS, cv, COLUMN_ID + " = ?", new String[]{String.valueOf(post.getId())});
     }
 
+    // Deletes a single post by ID
     public int deletePost(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(TABLE_POSTS, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
     }
 
+    // Deletes multiple posts atomically with database transaction
     public int deleteMultiplePosts(List<Long> ids) {
         if (ids == null || ids.isEmpty()) return 0;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -171,6 +180,7 @@ public class PostDatabaseHelper extends SQLiteOpenHelper {
         return deletedCount;
     }
 
+    // Searches posts whose title, content matches query string
     public List<Post> searchPosts(String query) {
         List<Post> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -188,6 +198,7 @@ public class PostDatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    // Returns total count of all stored posts
     public int getTotalCount() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_POSTS, null);
@@ -199,6 +210,7 @@ public class PostDatabaseHelper extends SQLiteOpenHelper {
         return count;
     }
 
+    // Returns count of pending offline draft posts waiting to be uploaded
     public int getPendingUploadCount() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_POSTS + " WHERE " + COLUMN_STATUS + " = 'draft'", null);
@@ -210,6 +222,7 @@ public class PostDatabaseHelper extends SQLiteOpenHelper {
         return count;
     }
 
+    // Maps database cursor row to Post model object
     private Post cursorToPost(Cursor cursor) {
         Post post = new Post();
         post.setId(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID)));

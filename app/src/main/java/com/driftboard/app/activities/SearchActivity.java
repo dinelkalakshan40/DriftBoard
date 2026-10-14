@@ -18,6 +18,7 @@ import com.driftboard.app.models.Post;
 
 import java.util.List;
 
+// search across post titles and contents
 public class SearchActivity extends AppCompatActivity {
 
     private PostDatabaseHelper dbHelper;
@@ -49,6 +50,7 @@ public class SearchActivity extends AppCompatActivity {
         rvSearchResults.setAdapter(postAdapter);
         updateCount(allPosts.size());
 
+        // changes search field to filter posts while typing
         etSearchInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -58,12 +60,14 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
+    // Queries SQLite database with search query and updates search results
     private void performSearch(String query) {
         List<Post> results = query.isEmpty() ? dbHelper.getAllPosts() : dbHelper.searchPosts(query);
         postAdapter.updateData(results);
         updateCount(results.size());
     }
 
+    // Updates text showing how many posts are displayed
     private void updateCount(int count) {
         tvResultsCount.setText(count + " results in title & message");
     }

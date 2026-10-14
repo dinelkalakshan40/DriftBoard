@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+// Activity display full details of post with actions for editing, sharing, deleting, and Blogger upload
 public class PostDetailActivity extends AppCompatActivity {
 
     private long postId;
@@ -67,6 +68,7 @@ public class PostDetailActivity extends AppCompatActivity {
         loadPostData();
     }
 
+    // method load the selected post and updates the information screen.
     private void loadPostData() {
         post = dbHelper.getPostById(postId);
         if (post == null) {
@@ -96,6 +98,7 @@ public class PostDetailActivity extends AppCompatActivity {
         }
     }
 
+    //uploads the selected post to the user's Blogger account and opens published post in a browser
     private void uploadSinglePostToBlogger() {
         if (post == null) return;
         android.content.SharedPreferences prefs = getSharedPreferences("driftboard_prefs", MODE_PRIVATE);
@@ -137,6 +140,7 @@ public class PostDetailActivity extends AppCompatActivity {
         });
     }
 
+    //display confirmation dialog before deleting a post
     private void showDeleteBottomSheet() {
         BottomSheetDialog dialog = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_delete, null);
@@ -155,6 +159,7 @@ public class PostDetailActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    //displays the available options for sharing a post
     private void showShareBottomSheet() {
         BottomSheetDialog dialog = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_share, null);
@@ -165,11 +170,13 @@ public class PostDetailActivity extends AppCompatActivity {
             launchSystemSharesheet();
         });
 
+        // Share  post WhatsApp
         view.findViewById(R.id.targetWhatsApp).setOnClickListener(v -> {
             dialog.dismiss();
             launchTargetShare("com.whatsapp");
         });
 
+        //share on fb
         view.findViewById(R.id.targetMessenger).setOnClickListener(v -> {
             dialog.dismiss();
             launchTargetShare("com.facebook.orca");
@@ -189,6 +196,7 @@ public class PostDetailActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    //share the post on specific application
     private void launchTargetShare(String packageName) {
         Intent shareIntent = createShareIntent();
         if (packageName != null && !packageName.isEmpty()) {
@@ -197,11 +205,11 @@ public class PostDetailActivity extends AppCompatActivity {
         try {
             startActivity(shareIntent);
         } catch (Exception e) {
-            // Fallback to system sharesheet if target app is not installed
             launchSystemSharesheet();
         }
     }
 
+    // sharing intent containing the post title and content
     private Intent createShareIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
@@ -219,6 +227,7 @@ public class PostDetailActivity extends AppCompatActivity {
         return shareIntent;
     }
 
+    // opens Android's standard sharing menu
     private void launchSystemSharesheet() {
         Intent shareIntent = createShareIntent();
         startActivity(Intent.createChooser(shareIntent, "Share via"));

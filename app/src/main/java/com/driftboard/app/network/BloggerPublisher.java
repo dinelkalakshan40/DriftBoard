@@ -17,6 +17,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+// publishing posts to the Blogger API
 public class BloggerPublisher {
 
     private static final String TAG = "BloggerPublisher";
@@ -24,17 +25,21 @@ public class BloggerPublisher {
     private final ExecutorService executor;
     private final Handler mainHandler;
 
+    // This interface returns the result of publishing a post
     public interface PublishCallback {
         void onSuccess(String remotePostId, String postUrl);
         void onError(String errorMessage);
     }
 
+
+    // Creates the objects needed for network communication
     public BloggerPublisher() {
         this.client = new OkHttpClient();
         this.executor = Executors.newSingleThreadExecutor();
         this.mainHandler = new Handler(Looper.getMainLooper());
     }
 
+    // Publishes a post to Blogger without blocking the main thread
     public void publishPost(Post post, String blogId, String oauthToken, PublishCallback callback) {
         executor.execute(() -> {
             try {

@@ -2,23 +2,26 @@ package com.driftboard.app.models;
 
 import java.io.Serializable;
 
+//  post entity in DriftBoard
 public class Post implements Serializable {
     private long id;
     private String title;
     private String content;
     private String imageUri;
-    private String status; // "draft" or "synced"
-    private String platform; // "wordpress" and "blogger".
-    private String remotePostId;
+    private String status; // Sync status: "draft" / "synced"
+    private String platform; // Target  platform: "wordpress" / "blogger"
+    private String remotePostId; // Remote server post ID assigned upon successful upload
     private long createdAt;
     private long updatedAt;
 
+    // Default constructor
     public Post() {
         this.status = "draft";
         this.createdAt = System.currentTimeMillis();
         this.updatedAt = System.currentTimeMillis();
     }
 
+    // Parameterized constructor
     public Post(String title, String content, String imageUri) {
         this.title = title;
         this.content = content;

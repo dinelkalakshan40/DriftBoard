@@ -16,9 +16,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+//displays posts with checkboxes for selecting multiple items
 public class MultiSelectAdapter extends RecyclerView.Adapter<MultiSelectAdapter.ViewHolder> {
 
+
+    // Listener used to notify the activity when selection count changes
     public interface OnSelectionChangeListener {
+        // Sends  current number of selected posts
         void onSelectionChanged(int count);
     }
 
@@ -26,15 +30,19 @@ public class MultiSelectAdapter extends RecyclerView.Adapter<MultiSelectAdapter.
     private final Set<Long> selectedIds = new HashSet<>();
     private final OnSelectionChangeListener listener;
 
+
+    // Receives  post list and listener from activity
     public MultiSelectAdapter(List<Post> posts, OnSelectionChangeListener listener) {
         this.posts = posts;
         this.listener = listener;
     }
 
+    // Returns  IDs of all currently selected posts
     public Set<Long> getSelectedIds() {
         return selectedIds;
     }
 
+    // Selects all posts in the list
     public void selectAll() {
         selectedIds.clear();
         for (Post p : posts) {
@@ -44,6 +52,7 @@ public class MultiSelectAdapter extends RecyclerView.Adapter<MultiSelectAdapter.
         if (listener != null) listener.onSelectionChanged(selectedIds.size());
     }
 
+    // Deselects all posts
     public void deselectAll() {
         selectedIds.clear();
         notifyDataSetChanged();
@@ -81,11 +90,15 @@ public class MultiSelectAdapter extends RecyclerView.Adapter<MultiSelectAdapter.
         });
     }
 
+
+
     @Override
     public int getItemCount() {
+        // Return number of posts available in list
         return posts != null ? posts.size() : 0;
     }
 
+    // Holds references to the views used by each list item
     static class ViewHolder extends RecyclerView.ViewHolder {
         CheckBox cbSelect;
         TextView tvTitle;

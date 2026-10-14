@@ -13,20 +13,26 @@ import com.driftboard.app.models.Post;
 
 import java.util.List;
 
+// This adapter displays saved posts cards with their sync status
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
+
+    // Listener used to handle clicks on  post card
     public interface OnItemClickListener {
+        // Sends the clicked post back to the activity
         void onItemClick(Post post);
     }
 
     private List<Post> postList;
     private final OnItemClickListener listener;
 
+    // Receives posts and click listener from the activity
     public PostAdapter(List<Post> postList, OnItemClickListener listener) {
         this.postList = postList;
         this.listener = listener;
     }
 
+    // Updates adapter dataset and refreshes view
     public void updateData(List<Post> newPosts) {
         this.postList = newPosts;
         notifyDataSetChanged();
@@ -46,6 +52,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.tvPostTitle.setText(post.getTitle());
         holder.tvPostSnippet.setText(post.getContent());
 
+        // Bind status badge styling based on draft vs synced state
         if ("synced".equalsIgnoreCase(post.getStatus())) {
             holder.tvStatusBadge.setText("synced");
             holder.tvStatusBadge.setBackgroundResource(R.drawable.bg_badge_synced);
@@ -68,6 +75,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return postList != null ? postList.size() : 0;
     }
 
+    // Holds references to views inside each post card
     static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView tvPostNumber, tvPostTitle, tvPostSnippet, tvStatusBadge;
 

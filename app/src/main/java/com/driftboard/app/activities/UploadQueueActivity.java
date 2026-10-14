@@ -24,6 +24,7 @@ import com.driftboard.app.network.WordPressPublisher;
 import java.util.ArrayList;
 import java.util.List;
 
+// Activity managing batch/group uploads of offline drafts to Blogger or WordPress
 public class UploadQueueActivity extends AppCompatActivity {
 
     private PostDatabaseHelper dbHelper;
@@ -34,7 +35,10 @@ public class UploadQueueActivity extends AppCompatActivity {
     private MultiSelectAdapter adapter;
     private List<Post> queuePosts;
 
+    // Handles WordPress publishing
     private final WordPressPublisher wpPublisher = new WordPressPublisher();
+
+    // Handles Blogger publishing
     private final BloggerPublisher bloggerPublisher = new BloggerPublisher();
 
     @Override
@@ -81,7 +85,7 @@ public class UploadQueueActivity extends AppCompatActivity {
         });
         rv.setAdapter(adapter);
 
-        // Pre-select first 2 posts matching Figma design
+        // Pre-select first 2 posts matching UI design specifications
         if (queuePosts.size() >= 2) {
             adapter.getSelectedIds().add(queuePosts.get(0).getId());
             adapter.getSelectedIds().add(queuePosts.get(1).getId());
@@ -93,6 +97,7 @@ public class UploadQueueActivity extends AppCompatActivity {
         btnUploadPosts.setOnClickListener(v -> executeBatchUpload());
     }
 
+    // Uploads the selected posts to the chosen platform
     private void executeBatchUpload() {
         List<Long> selectedIds = new ArrayList<>(adapter.getSelectedIds());
         if (selectedIds.isEmpty()) {
@@ -116,6 +121,7 @@ public class UploadQueueActivity extends AppCompatActivity {
             return;
         }
 
+        // Handle the upload when WordPress is selected
         if (isWordPress) {
             new Thread(() -> {
                 for (Long id : selectedIds) {
@@ -135,7 +141,7 @@ public class UploadQueueActivity extends AppCompatActivity {
                 });
             }).start();
         } else {
-            // Upload sequentially to Blogger API
+            // Upload sequentially Blogger API using CountDownLatch
             new Thread(() -> {
                 final String[] lastUrl = {"https://www.blogger.com"};
                 final boolean[] hasError = {false};

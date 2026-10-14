@@ -17,6 +17,7 @@ import com.driftboard.app.models.Post;
 import java.util.ArrayList;
 import java.util.List;
 
+// This activity can users to select and delete multiple posts at once
 public class MultiDeleteActivity extends AppCompatActivity {
 
     private PostDatabaseHelper dbHelper;
@@ -25,6 +26,8 @@ public class MultiDeleteActivity extends AppCompatActivity {
     private MultiSelectAdapter adapter;
     private boolean allSelected = false;
 
+    //method runs the multi-delete screen opens
+    //loads the posts and sets up the selection and delete buttons.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +41,7 @@ public class MultiDeleteActivity extends AppCompatActivity {
 
         findViewById(R.id.btnMultiCancel).setOnClickListener(v -> finish());
 
+        // Get all saved posts from local database
         List<Post> posts = dbHelper.getAllPosts();
         adapter = new MultiSelectAdapter(posts, count -> {
             tvSelectedCount.setText(count + " selected");
@@ -57,6 +61,7 @@ public class MultiDeleteActivity extends AppCompatActivity {
             }
         });
 
+        // Delete selected posts when delete button clicked
         btnBatchDelete.setOnClickListener(v -> {
             List<Long> ids = new ArrayList<>(adapter.getSelectedIds());
             if (ids.isEmpty()) {

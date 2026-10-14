@@ -19,13 +19,16 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
+// MainActivity displays the dashboard, recent posts, statistics, and navigation options
 public class MainActivity extends AppCompatActivity {
-
+    //read saved posts from SQLite
     private PostDatabaseHelper dbHelper;
     private TextView tvTotalPostsCount, tvPendingUploadCount;
     private RecyclerView rvRecentPosts;
     private PostAdapter postAdapter;
 
+    // This method runs when the dashboard screen is created.
+    // It connects the layout views, loads saved posts, and sets up click actions
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         });
         rvRecentPosts.setAdapter(postAdapter);
 
-        // Quick Actions
+        // Quick Actions UI mapping
         MaterialCardView cardNewPost = findViewById(R.id.cardNewPost);
         MaterialCardView cardSearch = findViewById(R.id.cardSearch);
         MaterialCardView cardViewPosts = findViewById(R.id.cardViewPosts);
@@ -68,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         // Profile Avatar Click
         findViewById(R.id.viewProfileAvatar).setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ProfileActivity.class)));
 
-        // Bottom Navigation
+        // Bottom Navigation panel and  routing
         bottomNav.setSelectedItemId(R.id.nav_home);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -94,12 +97,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // refreshes the post counts and recent posts
     @Override
     protected void onResume() {
         super.onResume();
         refreshDashboardData();
     }
 
+    // Refresh dashboard statistics counters and recent post cards from SQLite
     private void refreshDashboardData() {
         int total = dbHelper.getTotalCount();
         int pending = dbHelper.getPendingUploadCount();

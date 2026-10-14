@@ -15,6 +15,7 @@ import com.driftboard.app.models.Post;
 
 import java.util.List;
 
+// activity displays all posts saved on the device
 public class ViewPostsActivity extends AppCompatActivity {
 
     private PostDatabaseHelper dbHelper;
@@ -53,6 +54,7 @@ public class ViewPostsActivity extends AppCompatActivity {
         refreshPosts();
     }
 
+    // Reloads the saved posts and updates the list and count
     private void refreshPosts() {
         List<Post> posts = dbHelper.getAllPosts();
         if (postAdapter != null) {
@@ -61,6 +63,7 @@ public class ViewPostsActivity extends AppCompatActivity {
         updatePostCount(posts.size());
     }
 
+    //Displays the total number of posts saved on the device
     private void updatePostCount(int count) {
         tvTotalPostsBadge.setText(count + " posts on device");
     }

@@ -15,6 +15,7 @@ import com.driftboard.app.R;
 import com.driftboard.app.database.PostDatabaseHelper;
 import com.driftboard.app.models.Post;
 
+//activity users to edit their saved draft posts
 public class EditPostActivity extends AppCompatActivity {
 
     private long postId;
@@ -25,6 +26,7 @@ public class EditPostActivity extends AppCompatActivity {
     private ImageView ivEditPreview;
     private Uri currentImageUri;
 
+    //selected image is stored and displayed preview
     private final ActivityResultLauncher<String> replacePictureLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
@@ -33,6 +35,8 @@ public class EditPostActivity extends AppCompatActivity {
                 }
             });
 
+
+    // edit existing posts and sets up the screen buttons
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +77,7 @@ public class EditPostActivity extends AppCompatActivity {
         });
     }
 
+    // validate updated post details and saves them to SQLite
     private void saveChanges() {
         String title = etEditTitle.getText().toString().trim();
         String content = etEditContent.getText().toString().trim();
@@ -87,6 +92,7 @@ public class EditPostActivity extends AppCompatActivity {
         post.setContent(content);
         post.setImageUri(currentImageUri != null ? currentImageUri.toString() : "");
 
+        // Update existing post to SQLite database
         dbHelper.updatePost(post);
         Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
         finish();
